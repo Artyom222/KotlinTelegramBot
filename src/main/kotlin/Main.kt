@@ -11,13 +11,13 @@ data class Word(
 fun main() {
     val wordsFile = File("words.txt")
 
-    fun loadDictionary(): MutableList<Word> {
+    fun loadDictionary(): List<Word> {
         val dictionary = mutableListOf<Word>()
         wordsFile.readLines()
             .forEach { line ->
-                val line = line.split("|")
-                val correctAnswersCount: Int = line[2].toIntOrNull() ?: 0
-                val word = Word(line[0], line[1], correctAnswersCount)
+                val parts = line.split("|")
+                val correctAnswersCount: Int = parts[2].toIntOrNull() ?: 0
+                val word = Word(parts[0], parts[1], correctAnswersCount)
                 dictionary.add(word)
             }
         return dictionary

@@ -50,7 +50,6 @@ fun main() {
                     continue
                 } else println("Словарь пустой")
             }
-
             "0" -> break
             else -> println("Введите число 1, 2 или 0")
         }

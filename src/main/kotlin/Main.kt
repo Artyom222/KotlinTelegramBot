@@ -3,6 +3,7 @@ package org.example
 import java.io.File
 
 const val CORRECT_ANSWERS_TO_LEARN = 3
+const val OPTIONS_COUNT = 4
 
 data class Word(
     val original: String,
@@ -40,7 +41,32 @@ fun main() {
         )
 
         when (readln()) {
-            "1" -> println("Учить слова")
+            "1" -> {
+                val notLearnedList = dictionary.filter { it.correctAnswersCount < CORRECT_ANSWERS_TO_LEARN }
+                if (notLearnedList.isEmpty()) {
+                    println("Все слова выучены!")
+                    continue
+                }
+                var questionWords = notLearnedList.shuffled().take(OPTIONS_COUNT)
+                val questionWord = questionWords.random()
+                if (questionWords.size < OPTIONS_COUNT) {
+                    val shortageCount = OPTIONS_COUNT - questionWords.size
+                    val shortageList =
+                        dictionary.filter { it.correctAnswersCount >= CORRECT_ANSWERS_TO_LEARN }.take(shortageCount)
+                    questionWords = questionWords.plus(shortageList)
+                }
+                val shuffledAnswers = questionWords.map { it.translate }.shuffled()
+                println(
+                    """
+                    ${questionWord.original}:
+                    1 - ${shuffledAnswers[0]}
+                    2 - ${shuffledAnswers[1]}
+                    3 - ${shuffledAnswers[2]}
+                    4 - ${shuffledAnswers[3]}
+                """.trimIndent()
+                )
+            }
+
             "2" -> {
                 val totalCount = dictionary.size
                 val learnedCount = dictionary.filter { it.correctAnswersCount >= CORRECT_ANSWERS_TO_LEARN }.size
@@ -50,6 +76,7 @@ fun main() {
                     continue
                 } else println("Словарь пустой")
             }
+
             "0" -> break
             else -> println("Введите число 1, 2 или 0")
         }

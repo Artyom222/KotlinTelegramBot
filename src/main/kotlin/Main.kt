@@ -56,15 +56,11 @@ fun main() {
                     questionWords = questionWords.plus(shortageList)
                 }
                 val shuffledAnswers = questionWords.map { it.translate }.shuffled()
-                println(
-                    """
-                    ${questionWord.original}:
-                    1 - ${shuffledAnswers[0]}
-                    2 - ${shuffledAnswers[1]}
-                    3 - ${shuffledAnswers[2]}
-                    4 - ${shuffledAnswers[3]}
-                """.trimIndent()
-                )
+                println("${questionWord.original}:")
+                for (i in 0 until OPTIONS_COUNT) {
+                    println("${i + 1} - ${shuffledAnswers[i]}")
+                }
+
             }
 
             "2" -> {

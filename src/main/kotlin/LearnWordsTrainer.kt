@@ -7,24 +7,30 @@ data class Question(
     val correctAnswer: Word,
 )
 
+data class Statistics(
+    val learned: Int,
+    val total: Int,
+    val percent: Int,
+)
+
 class LearnWordsTrainer {
 
     private var question: Question? = null
     private val dictionary = loadDictionary()
 
-    fun getStatistics() {
+    fun getStatistics(): Statistics {
         val totalCount = dictionary.size
         val learnedCount = dictionary.filter { it.correctAnswersCount >= CORRECT_ANSWERS_TO_LEARN }.size
+        var percent = 0
         if (totalCount > 0) {
-            val percent = (learnedCount * 100 / totalCount)
-            println("Выучено $learnedCount из $totalCount слов | $percent%")
-        } else println("Словарь пустой")
-
+            percent = (learnedCount * 100 / totalCount)
+        }
+        return Statistics(learnedCount, totalCount, percent)
     }
 
     fun getNextQuestion(): Question? {
         val notLearnedList = dictionary.filter { it.correctAnswersCount < CORRECT_ANSWERS_TO_LEARN }
-        if (notLearnedList.isEmpty()) return  null
+        if (notLearnedList.isEmpty()) return null
         var questionWords = notLearnedList.shuffled().take(OPTIONS_COUNT)
         val questionWord = questionWords.random()
         if (questionWords.size < OPTIONS_COUNT) {
@@ -34,12 +40,12 @@ class LearnWordsTrainer {
             questionWords = questionWords.plus(shortageList)
         }
         val shuffledAnswers = questionWords.shuffled()
-        question = Question(variants = shuffledAnswers,questionWord)
+        question = Question(variants = shuffledAnswers, questionWord)
         return question
 
     }
 
-    fun checkAnswer(userAnswerInput:Int): Boolean {
+    fun checkAnswer(userAnswerInput: Int): Boolean {
         return question?.let {
             val correctAnswerId = it.variants.indexOf(it.correctAnswer) + 1
             if (correctAnswerId == userAnswerInput) {

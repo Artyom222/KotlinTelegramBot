@@ -13,7 +13,7 @@ fun Question.questionToString(): String {
     val variants = this.variants.mapIndexed { index, word ->
         "${index + 1} - ${word.translate}"
     }.joinToString("\n")
-    return this.correctAnswer.original + "\n" + variants + "\n------------" +"\n0 - Меню"
+    return this.correctAnswer.original + "\n" + variants + "\n------------" + "\n0 - Меню"
 }
 
 fun main() {
@@ -45,15 +45,15 @@ fun main() {
                     if (userAnswerInput == 0) break
                     if (trainer.checkAnswer(userAnswerInput)) {
                         println("Правильно!")
-                    }
-                        else {
+                    } else {
                         println("Неправильно! ${question.correctAnswer.original} – это ${question.correctAnswer.translate}")
                     }
                 }
             }
 
             "2" -> {
-                trainer.getStatistics()
+                val statistics = trainer.getStatistics()
+                println("Выучено ${statistics.learned} из ${statistics.total} слов | ${statistics.percent}%")
             }
 
             "0" -> break

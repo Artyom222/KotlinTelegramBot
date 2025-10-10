@@ -18,7 +18,13 @@ fun Question.questionToString(): String {
 
 fun main() {
 
-    val trainer = LearnWordsTrainer()
+    val trainer = try {
+        LearnWordsTrainer()
+    } catch (e: Exception) {
+        println("Невозможно загрузить словарь")
+        return
+    }
+
 
     while (true) {
         println(

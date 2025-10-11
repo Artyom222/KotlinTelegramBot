@@ -57,16 +57,21 @@ class LearnWordsTrainer {
     }
 
     private fun loadDictionary(): List<Word> {
-        val dictionary = mutableListOf<Word>()
-        val wordsFile = File("words.txt")
-        wordsFile.readLines()
-            .forEach { line ->
-                val parts = line.split("|")
-                val correctAnswersCount: Int = parts[2].toIntOrNull() ?: 0
-                val word = Word(parts[0], parts[1], correctAnswersCount)
-                dictionary.add(word)
-            }
-        return dictionary
+        try {
+            val dictionary = mutableListOf<Word>()
+            val wordsFile = File("words.txt")
+            wordsFile.readLines()
+                .forEach { line ->
+                    val parts = line.split("|")
+                    val correctAnswersCount: Int = parts[2].toIntOrNull() ?: 0
+                    val word = Word(parts[0], parts[1], correctAnswersCount)
+                    dictionary.add(word)
+                }
+            return dictionary
+        } catch (e: IndexOutOfBoundsException) {
+            throw IllegalArgumentException("некорректный файл")
+        }
+
     }
 
     private fun saveDictionary(dictionary: List<Word>) {

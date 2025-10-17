@@ -18,8 +18,8 @@ fun main(args: Array<String>) {
             continue
         }
 
-        val UpdateIdRegex: Regex = "\"update_id\":(.+?),".toRegex()
-        val matchResultUpdateId: MatchResult? = UpdateIdRegex.find(updates)
+        val updateIdRegex: Regex = "\"update_id\":(\\d+),".toRegex()
+        val matchResultUpdateId: MatchResult? = updateIdRegex.find(updates)
         val groupsUpdateId = matchResultUpdateId?.groups
         val updateIdString = groupsUpdateId?.get(1)?.value
         updateId = updateIdString?.toInt()?.plus(1) ?: 0

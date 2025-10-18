@@ -1,17 +1,13 @@
 package org.example
 
-import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
-
 fun main(args: Array<String>) {
     val botToken = args[0]
+    val telegramBotService = TelegramBotService()
     var updateId = 0
 
     while (true) {
         Thread.sleep(2000)
-        val updates = getUpdates(botToken, updateId)
+        val updates = telegramBotService.getUpdates(botToken, updateId)
         println(updates)
 
         if (updates.contains("\"result\":[]")) {
@@ -27,17 +23,17 @@ fun main(args: Array<String>) {
         val messageTextRegex: Regex = "\"text\":\"(.+?)\"".toRegex()
         val matchResult: MatchResult? = messageTextRegex.find(updates)
         val groups = matchResult?.groups
-        val text = groups?.get(1)?.value
-        println(text)
+        val textMessage = groups?.get(1)?.value
+        println(textMessage)
+
+        val chatIdRegex: Regex = "\"chat\":\\{\"id\":(\\d+)".toRegex()
+        val matchResultChatId: MatchResult? = chatIdRegex.find(updates)
+        val groupsChatId = matchResultChatId?.groups
+        val chatIdString = groupsChatId?.get(1)?.value
+        val chatId = chatIdString?.toInt() ?: 0
+
+        if (textMessage.equals("Hello", true)) telegramBotService.sendMessage(botToken, chatId)
+
     }
 
-}
-
-fun getUpdates(botToken: String, updateId: Int): String {
-    val urlGetUpdates = "https://api.telegram.org/bot$botToken/getUpdates?offset=$updateId"
-    val client = HttpClient.newBuilder().build()
-    val request = HttpRequest.newBuilder().uri(URI.create(urlGetUpdates)).build()
-    val response = client.send(request, HttpResponse.BodyHandlers.ofString())
-
-    return response.body()
 }

@@ -32,8 +32,8 @@ fun main(args: Array<String>) {
         val chatIdString = groupsChatId?.get(1)?.value
         val chatId = chatIdString?.toInt() ?: 0
 
-        if (textMessage.equals("Hello", true)) telegramBotService.sendMessage(botToken, chatId)
-
+        if (textMessage.equals("Hello", true) && chatId != 0) {
+            telegramBotService.sendMessage(botToken, chatId, "Hello")
+        }
     }
-
 }

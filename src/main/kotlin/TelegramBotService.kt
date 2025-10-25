@@ -8,8 +8,6 @@ import java.net.http.HttpResponse
 
 class TelegramBotService {
 
-    val trainer = LearnWordsTrainer()
-
     fun getUpdates(botToken: String, updateId: Int): String {
         val urlGetUpdates = "https://api.telegram.org/bot$botToken/getUpdates?offset=$updateId"
         val client = HttpClient.newBuilder().build()

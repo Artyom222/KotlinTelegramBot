@@ -4,6 +4,7 @@ fun main(args: Array<String>) {
     val botToken = args[0]
     val telegramBotService = TelegramBotService()
     var updateId = 0
+    val trainer = LearnWordsTrainer()
 
     val updateIdRegex: Regex = "\"update_id\":(\\d+),".toRegex()
     val messageTextRegex: Regex = "\"text\":\"(.+?)\"".toRegex()
@@ -33,7 +34,11 @@ fun main(args: Array<String>) {
         }
 
         if (data.equals("statistics_clicked", true) && chatId != 0) {
-            telegramBotService.sendMessage(botToken, chatId, "Показать статистику")
+            val statistics =
+                    "Выучено ${trainer.getStatistics().learned} из" +
+                    " ${trainer.getStatistics().total} слов | " +
+                    "${trainer.getStatistics().percent}%"
+            telegramBotService.sendMessage(botToken, chatId, statistics)
         }
     }
 }

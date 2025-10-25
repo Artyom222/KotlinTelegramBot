@@ -5,6 +5,11 @@ fun main(args: Array<String>) {
     val telegramBotService = TelegramBotService()
     var updateId = 0
 
+    val updateIdRegex: Regex = "\"update_id\":(\\d+),".toRegex()
+    val messageTextRegex: Regex = "\"text\":\"(.+?)\"".toRegex()
+    val chatIdRegex: Regex = "\"chat\":\\{\"id\":(\\d+)".toRegex()
+    val dataRegex: Regex = "\"data\":\"(.+?)\"".toRegex()
+
     while (true) {
         Thread.sleep(2000)
         val updates = telegramBotService.getUpdates(botToken, updateId)
@@ -14,26 +19,21 @@ fun main(args: Array<String>) {
             continue
         }
 
-        val updateIdRegex: Regex = "\"update_id\":(\\d+),".toRegex()
-        val matchResultUpdateId: MatchResult? = updateIdRegex.find(updates)
-        val groupsUpdateId = matchResultUpdateId?.groups
-        val updateIdString = groupsUpdateId?.get(1)?.value
-        updateId = updateIdString?.toInt()?.plus(1) ?: 0
-
-        val messageTextRegex: Regex = "\"text\":\"(.+?)\"".toRegex()
-        val matchResult: MatchResult? = messageTextRegex.find(updates)
-        val groups = matchResult?.groups
-        val textMessage = groups?.get(1)?.value
-        println(textMessage)
-
-        val chatIdRegex: Regex = "\"chat\":\\{\"id\":(\\d+)".toRegex()
-        val matchResultChatId: MatchResult? = chatIdRegex.find(updates)
-        val groupsChatId = matchResultChatId?.groups
-        val chatIdString = groupsChatId?.get(1)?.value
-        val chatId = chatIdString?.toInt() ?: 0
+        updateId = updateIdRegex.find(updates)?.groups?.get(1)?.value?.toInt()?.plus(1) ?: continue
+        val textMessage = messageTextRegex.find(updates)?.groups?.get(1)?.value
+        val chatId = chatIdRegex.find(updates)?.groups?.get(1)?.value?.toInt() ?: 0
+        val data = dataRegex.find(updates)?.groups?.get(1)?.value
 
         if (textMessage.equals("Hello", true) && chatId != 0) {
             telegramBotService.sendMessage(botToken, chatId, "Hello")
+        }
+
+        if (textMessage.equals("menu", true) && chatId != 0) {
+            telegramBotService.sendMenu(botToken, chatId)
+        }
+
+        if (data.equals("statistics_clicked", true) && chatId != 0) {
+            telegramBotService.sendMessage(botToken, chatId, "Показать статистику")
         }
     }
 }

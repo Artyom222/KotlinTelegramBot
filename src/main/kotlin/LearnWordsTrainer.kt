@@ -13,6 +13,12 @@ data class Statistics(
     val percent: Int,
 )
 
+data class Word(
+    val original: String,
+    val translate: String,
+    var correctAnswersCount: Int = 0,
+)
+
 class LearnWordsTrainer {
 
     private var question: Question? = null
@@ -81,6 +87,5 @@ class LearnWordsTrainer {
         }
         wordsFile.writeText(content)
     }
-
 
 }

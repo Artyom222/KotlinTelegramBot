@@ -3,12 +3,6 @@ package org.example
 const val CORRECT_ANSWERS_TO_LEARN = 3
 const val OPTIONS_COUNT = 4
 
-data class Word(
-    val original: String,
-    val translate: String,
-    var correctAnswersCount: Int = 0,
-)
-
 fun Question.questionToString(): String {
     val variants = this.variants.mapIndexed { index, word ->
         "${index + 1} - ${word.translate}"
@@ -24,7 +18,6 @@ fun main() {
         println("Невозможно загрузить словарь")
         return
     }
-
 
     while (true) {
         println(

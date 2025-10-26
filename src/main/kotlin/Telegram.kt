@@ -21,18 +21,18 @@ fun main(args: Array<String>) {
 
         updateId = updateIdRegex.find(updates)?.groups?.get(1)?.value?.toInt()?.plus(1) ?: continue
         val textMessage = messageTextRegex.find(updates)?.groups?.get(1)?.value
-        val chatId = chatIdRegex.find(updates)?.groups?.get(1)?.value?.toInt() ?: 0
+        val chatId = chatIdRegex.find(updates)?.groups?.get(1)?.value?.toInt() ?: continue
         val data = dataRegex.find(updates)?.groups?.get(1)?.value
 
         if (textMessage.equals("Hello", true) && chatId != 0) {
             telegramBotService.sendMessage(botToken, chatId, "Hello")
         }
 
-        if (textMessage.equals("menu", true) && chatId != 0) {
+        if (textMessage.equals("/start", true) && chatId != 0) {
             telegramBotService.sendMenu(botToken, chatId)
         }
 
-        if (data.equals("statistics_clicked", true) && chatId != 0) {
+        if (data.equals(STATISTICS_CLICKED, true) && chatId != 0) {
             telegramBotService.sendMessage(botToken, chatId, "Показать статистику")
         }
     }

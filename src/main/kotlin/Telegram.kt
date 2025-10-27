@@ -2,7 +2,7 @@ package org.example
 
 fun main(args: Array<String>) {
     val botToken = args[0]
-    val telegramBotService = TelegramBotService()
+    val telegramBotService = TelegramBotService(botToken)
     var updateId = 0
 
     val updateIdRegex: Regex = "\"update_id\":(\\d+),".toRegex()
@@ -12,7 +12,7 @@ fun main(args: Array<String>) {
 
     while (true) {
         Thread.sleep(2000)
-        val updates = telegramBotService.getUpdates(botToken, updateId)
+        val updates = telegramBotService.getUpdates(updateId)
         println(updates)
 
         if (updates.contains("\"result\":[]")) {
@@ -24,16 +24,16 @@ fun main(args: Array<String>) {
         val chatId = chatIdRegex.find(updates)?.groups?.get(1)?.value?.toInt() ?: continue
         val data = dataRegex.find(updates)?.groups?.get(1)?.value
 
-        if (textMessage.equals("Hello", true) && chatId != 0) {
-            telegramBotService.sendMessage(botToken, chatId, "Hello")
+        if (textMessage.equals("Hello", true)) {
+            telegramBotService.sendMessage(chatId, "Hello")
         }
 
-        if (textMessage.equals("/start", true) && chatId != 0) {
-            telegramBotService.sendMenu(botToken, chatId)
+        if (textMessage.equals("/start", true)) {
+            telegramBotService.sendMenu(chatId)
         }
 
         if (data.equals(STATISTICS_CLICKED, true) && chatId != 0) {
-            telegramBotService.sendMessage(botToken, chatId, "Показать статистику")
+            telegramBotService.sendMessage(chatId, "Показать статистику")
         }
     }
 }

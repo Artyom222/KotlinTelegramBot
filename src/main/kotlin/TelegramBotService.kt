@@ -6,10 +6,17 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 
-class TelegramBotService {
+const val LEARN_WORDS_CLICKED = "learn_words_clicked"
+const val STATISTICS_CLICKED = "statistics_clicked"
+const val API_TELEGRAM = "https://api.telegram.org/bot"
 
-    fun getUpdates(botToken: String, updateId: Int): String {
-        val urlGetUpdates = "https://api.telegram.org/bot$botToken/getUpdates?offset=$updateId"
+class TelegramBotService(private val botToken: String) {
+
+    val trainer = LearnWordsTrainer()
+    val client = HttpClient.newBuilder().build()
+
+    fun getUpdates(updateId: Int): String {
+        val urlGetUpdates = "$API_TELEGRAM$botToken/getUpdates?offset=$updateId"
         val client = HttpClient.newBuilder().build()
         val request = HttpRequest.newBuilder().uri(URI.create(urlGetUpdates)).build()
         val response = client.send(request, HttpResponse.BodyHandlers.ofString())
@@ -17,16 +24,16 @@ class TelegramBotService {
         return response.body()
     }
 
-    fun sendMessage(botToken: String, chatId: Int, text: String) {
+    fun sendMessage(chatId: Int, text: String) {
         val encodedText = URLEncoder.encode(text, "UTF-8")
-        val urlSendMessage = "https://api.telegram.org/bot$botToken/sendMessage?chat_id=$chatId&text=$encodedText"
+        val urlSendMessage = "$API_TELEGRAM$botToken/sendMessage?chat_id=$chatId&text=$encodedText"
         val client = HttpClient.newBuilder().build()
         val request = HttpRequest.newBuilder().uri(URI.create(urlSendMessage)).build()
         val response = client.send(request, HttpResponse.BodyHandlers.ofString())
     }
 
-    fun sendMenu(botToken: String, chatId: Int) {
-        val urlSendMessage = "https://api.telegram.org/bot$botToken/sendMessage"
+    fun sendMenu(chatId: Int) {
+        val urlSendMessage = "$API_TELEGRAM$botToken/sendMessage"
         val sendMenuBody = """
             {
                 "chat_id": $chatId,
@@ -36,11 +43,11 @@ class TelegramBotService {
                         [
                             {
                                 "text": "Изучить слова",
-                                "callback_data": "learn_words_clicked"
+                                "callback_data": "$LEARN_WORDS_CLICKED"
                             },
                             {
                                 "text": "Статистика",
-                                "callback_data": "statistics_clicked"
+                                "callback_data": "$STATISTICS_CLICKED"
                             }
                         ]
                     ]
@@ -48,7 +55,6 @@ class TelegramBotService {
             }
         """.trimIndent()
 
-        val client = HttpClient.newBuilder().build()
         val request = HttpRequest.newBuilder().uri(URI.create(urlSendMessage))
             .header("Content-type", "application/json")
             .POST(HttpRequest.BodyPublishers.ofString(sendMenuBody))

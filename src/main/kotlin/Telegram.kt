@@ -35,9 +35,9 @@ fun main(args: Array<String>) {
 
         if (data.equals("statistics_clicked", true) && chatId != 0) {
             val statistics =
-                    "Выучено ${trainer.getStatistics().learned} из" +
-                    " ${trainer.getStatistics().total} слов | " +
-                    "${trainer.getStatistics().percent}%"
+                "Выучено ${trainer.getStatistics().learned} из" +
+                        " ${trainer.getStatistics().total} слов | " +
+                        "${trainer.getStatistics().percent}%"
             telegramBotService.sendMessage(botToken, chatId, statistics)
         }
     }

@@ -38,7 +38,7 @@ fun main(args: Array<String>) {
                 "Выучено ${trainer.getStatistics().learned} из" +
                         " ${trainer.getStatistics().total} слов | " +
                         "${trainer.getStatistics().percent}%"
-            telegramBotService.sendMessage(botToken, chatId, statistics)
+            telegramBotService.sendMessage(chatId, statistics)
         }
     }
 }

@@ -33,11 +33,11 @@ fun main(args: Array<String>) {
             telegramBotService.sendMenu(chatId)
         }
 
-        if (data.equals(STATISTICS_CLICKED, true) && chatId != 0) {
+        if (data.equals(STATISTICS_CLICKED, true)) {
             val statistics =
-                "Выучено ${trainer.getStatistics().learned} из" +
-                        " ${trainer.getStatistics().total} слов | " +
-                        "${trainer.getStatistics().percent}%"
+                with(trainer.getStatistics()){
+                    "Выучено $learned из $total слов | $percent%"
+                }
             telegramBotService.sendMessage(chatId, statistics)
         }
     }

@@ -5,6 +5,7 @@ fun main(args: Array<String>) {
     val telegramBotService = TelegramBotService(botToken)
     var updateId = 0
     val trainer = LearnWordsTrainer()
+    var question: Question? = null
 
     val updateIdRegex: Regex = "\"update_id\":(\\d+),".toRegex()
     val messageTextRegex: Regex = "\"text\":\"(.+?)\"".toRegex()
@@ -35,14 +36,14 @@ fun main(args: Array<String>) {
 
         if (data.equals(STATISTICS_CLICKED, true)) {
             val statistics =
-                with(trainer.getStatistics()){
+                with(trainer.getStatistics()) {
                     "Выучено $learned из $total слов | $percent%"
                 }
-            telegramBotService.sendMessage(chatId, statistics)
+            telegramBotService.sendStatistics(chatId, statistics)
         }
 
         if (data.equals(LEARN_WORDS_CLICKED, true)) {
-            val question = trainer.getNextQuestion()
+            question = trainer.getNextQuestion()
             if (question == null) {
                 telegramBotService.sendMessage(chatId, "Все слова выучены!")
                 break
@@ -50,5 +51,31 @@ fun main(args: Array<String>) {
             telegramBotService.sendQuestion(chatId, question)
 
         }
+
+        if (data?.startsWith(CALLBACK_DATA_ANSWER_PREFIX) == true) {
+            val userAnswerIndex = data.substringAfter("answer_").toInt()
+            if (trainer.checkAnswer(userAnswerIndex)) {
+                telegramBotService.sendMessage(chatId, "Правильно!")
+            } else {
+                telegramBotService.sendMessage(
+                    chatId, "Неправильно! ${
+                        question?.correctAnswer?.original
+                    } – это ${
+                        question?.correctAnswer?.translate
+                    }"
+                )
+            }
+            question = trainer.getNextQuestion()
+            if (question == null) {
+                telegramBotService.sendMessage(chatId, "Все слова выучены!")
+                break
+            }
+            telegramBotService.sendQuestion(chatId, question)
+        }
+
+        if (data.equals(BACK_TO_MENU_CLICKED, true)) {
+            telegramBotService.sendMenu(chatId)
+        }
+
     }
 }

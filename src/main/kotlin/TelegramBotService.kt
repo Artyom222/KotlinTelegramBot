@@ -37,6 +37,15 @@ class TelegramBotService(private val botToken: String) {
     fun sendQuestion(chatId: Int, question: Question) {
         val urlSendMessage = "$API_TELEGRAM$botToken/sendMessage"
         val text = "Выбери правильный перевод слова:\n${question.correctAnswer.original}"
+        val buttons = question.variants.mapIndexed { index, word ->
+            """
+                {
+                    "text": "${question.variants[index].translate}",
+                    "callback_data": "${CALLBACK_DATA_ANSWER_PREFIX}${index + 1}"
+                }
+            """.trimIndent()
+        }
+
         val sendQuestionBody = """
             {
                 "chat_id": $chatId,
@@ -44,22 +53,7 @@ class TelegramBotService(private val botToken: String) {
                 "reply_markup": {
                     "inline_keyboard": [
                         [
-                            {
-                                "text": "${question.variants[0].translate}",
-                                "callback_data": "${CALLBACK_DATA_ANSWER_PREFIX}1"
-                            },
-                            {
-                                "text": "${question.variants[1].translate}",
-                                "callback_data": "${CALLBACK_DATA_ANSWER_PREFIX}2"
-                            },
-                            {
-                                "text": "${question.variants[2].translate}",
-                                "callback_data": "${CALLBACK_DATA_ANSWER_PREFIX}3"
-                            },
-                            {
-                                "text": "${question.variants[3].translate}",
-                                "callback_data": "${CALLBACK_DATA_ANSWER_PREFIX}4"
-                            }
+                            ${buttons.joinToString(",\n")}
                         ],
                         [
                             {
@@ -71,6 +65,7 @@ class TelegramBotService(private val botToken: String) {
                 }
             }
         """.trimIndent()
+        println(sendQuestionBody)
 
         val request = HttpRequest.newBuilder().uri(URI.create(urlSendMessage))
             .header("Content-type", "application/json")

@@ -53,7 +53,7 @@ fun main(args: Array<String>) {
         }
 
         if (data?.startsWith(CALLBACK_DATA_ANSWER_PREFIX) == true) {
-            val userAnswerIndex = data.substringAfter("answer_").toInt()
+            val userAnswerIndex = data.substringAfter(CALLBACK_DATA_ANSWER_PREFIX).toInt()
             if (trainer.checkAnswer(userAnswerIndex)) {
                 telegramBotService.sendMessage(chatId, "Правильно!")
             } else {

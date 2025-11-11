@@ -40,7 +40,7 @@ class TelegramBotService(private val botToken: String) {
         val buttons = question.variants.mapIndexed { index, word ->
             """
                 {
-                    "text": "${question.variants[index].translate}",
+                    "text": "${word.translate}",
                     "callback_data": "${CALLBACK_DATA_ANSWER_PREFIX}${index + 1}"
                 }
             """.trimIndent()

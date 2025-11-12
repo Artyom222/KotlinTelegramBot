@@ -7,6 +7,7 @@ import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 
 const val LEARN_WORDS_CLICKED = "learn_words_clicked"
+const val BACK_TO_MENU_CLICKED = "back_to_menu_clicked"
 const val STATISTICS_CLICKED = "statistics_clicked"
 const val API_TELEGRAM = "https://api.telegram.org/bot"
 const val CALLBACK_DATA_ANSWER_PREFIX = "answer_"
@@ -36,6 +37,15 @@ class TelegramBotService(private val botToken: String) {
     fun sendQuestion(chatId: Int, question: Question) {
         val urlSendMessage = "$API_TELEGRAM$botToken/sendMessage"
         val text = "Выбери правильный перевод слова:\n${question.correctAnswer.original}"
+        val buttons = question.variants.mapIndexed { index, word ->
+            """
+                {
+                    "text": "${word.translate}",
+                    "callback_data": "${CALLBACK_DATA_ANSWER_PREFIX}${index + 1}"
+                }
+            """.trimIndent()
+        }
+
         val sendQuestionBody = """
             {
                 "chat_id": $chatId,
@@ -43,27 +53,19 @@ class TelegramBotService(private val botToken: String) {
                 "reply_markup": {
                     "inline_keyboard": [
                         [
+                            ${buttons.joinToString(",\n")}
+                        ],
+                        [
                             {
-                                "text": "${question.variants[0].translate}",
-                                "callback_data": "${CALLBACK_DATA_ANSWER_PREFIX}0"
-                            },
-                            {
-                                "text": "${question.variants[1].translate}",
-                                "callback_data": "${CALLBACK_DATA_ANSWER_PREFIX}1"
-                            },
-                            {
-                                "text": "${question.variants[2].translate}",
-                                "callback_data": "${CALLBACK_DATA_ANSWER_PREFIX}2"
-                            },
-                            {
-                                "text": "${question.variants[3].translate}",
-                                "callback_data": "${CALLBACK_DATA_ANSWER_PREFIX}3"
+                                "text": "Вернуться в меню",
+                                "callback_data": "$BACK_TO_MENU_CLICKED"
                             }
-                        ]
+                        ]        
                     ]
                 }
             }
         """.trimIndent()
+        println(sendQuestionBody)
 
         val request = HttpRequest.newBuilder().uri(URI.create(urlSendMessage))
             .header("Content-type", "application/json")
@@ -88,6 +90,32 @@ class TelegramBotService(private val botToken: String) {
                             {
                                 "text": "Статистика",
                                 "callback_data": "$STATISTICS_CLICKED"
+                            }
+                        ]
+                    ]
+                }
+            }
+        """.trimIndent()
+
+        val request = HttpRequest.newBuilder().uri(URI.create(urlSendMessage))
+            .header("Content-type", "application/json")
+            .POST(HttpRequest.BodyPublishers.ofString(sendMenuBody))
+            .build()
+        val response = client.send(request, HttpResponse.BodyHandlers.ofString())
+    }
+
+    fun sendStatistics(chatId: Int, statistics: String) {
+        val urlSendMessage = "$API_TELEGRAM$botToken/sendMessage"
+        val sendMenuBody = """
+            {
+                "chat_id": $chatId,
+                "text": "$statistics",
+                "reply_markup": {
+                    "inline_keyboard": [
+                        [
+                            {
+                                "text": "Вернуться в меню",
+                                "callback_data": "$BACK_TO_MENU_CLICKED"
                             }
                         ]
                     ]

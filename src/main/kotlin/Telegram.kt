@@ -64,12 +64,14 @@ fun main(args: Array<String>) {
                     }"
                 )
             }
-            trainer.question = trainer.getNextQuestion()
-            if (trainer.question == null) {
+            val nextQuestion = trainer.getNextQuestion()
+            if (nextQuestion == null) {
                 telegramBotService.sendMessage(chatId, "Все слова выучены!")
                 break
+            } else {
+                telegramBotService.sendQuestion(chatId, nextQuestion)
             }
-            telegramBotService.sendQuestion(chatId, trainer.question!!)
+
         }
 
         if (data.equals(BACK_TO_MENU_CLICKED, true)) {

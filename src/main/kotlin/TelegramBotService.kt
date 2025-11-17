@@ -38,7 +38,7 @@ data class InlineKeyBoard(
     val callbackData: String,
 )
 
-class TelegramBotService(private val botToken: String) {
+class TelegramBotService(private val botToken: String, private val json: Json) {
 
     val trainer = LearnWordsTrainer()
     val client = HttpClient.newBuilder().build()
@@ -52,7 +52,7 @@ class TelegramBotService(private val botToken: String) {
         return response.body()
     }
 
-    fun sendMessage(json: Json, chatId: Long?, text: String): String {
+    fun sendMessage(chatId: Long?, text: String): String {
 
         val urlSendMessage = "$API_TELEGRAM$botToken/sendMessage"
         val requestBody = SendMessageRequest(
@@ -69,7 +69,7 @@ class TelegramBotService(private val botToken: String) {
         return response.body()
     }
 
-    fun sendQuestion(json: Json, chatId: Long?, question: Question) {
+    fun sendQuestion(chatId: Long?, question: Question) {
         val urlSendMessage = "$API_TELEGRAM$botToken/sendMessage"
         val text = "Выбери правильный перевод слова:\n${question.correctAnswer.original}"
 
@@ -98,7 +98,7 @@ class TelegramBotService(private val botToken: String) {
         val response = client.send(request, HttpResponse.BodyHandlers.ofString())
     }
 
-    fun sendMenu(json: Json, chatId: Long?) {
+    fun sendMenu(chatId: Long?) {
         val urlSendMessage = "$API_TELEGRAM$botToken/sendMessage"
 
         val requestBody = SendMessageRequest(
@@ -122,7 +122,7 @@ class TelegramBotService(private val botToken: String) {
         val response = client.send(request, HttpResponse.BodyHandlers.ofString())
     }
 
-    fun sendStatistics(json: Json, chatId: Long?, statistics: String) {
+    fun sendStatistics(chatId: Long?, statistics: String) {
         val urlSendMessage = "$API_TELEGRAM$botToken/sendMessage"
 
         val requestBody = SendMessageRequest(

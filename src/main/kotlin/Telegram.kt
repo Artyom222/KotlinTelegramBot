@@ -43,7 +43,10 @@ data class Chat(
 )
 
 fun main(args: Array<String>) {
-    val botToken = args[0]
+    val botToken = args.firstOrNull() ?: run {
+        println("Не указан токен бота.")
+        return
+    }
     val json = Json {
         ignoreUnknownKeys = true
     }
@@ -63,11 +66,11 @@ fun main(args: Array<String>) {
 
         val textMessage = firstUpdate.message?.text
         val chatId = firstUpdate.message?.chat?.id ?: firstUpdate.callbackQuery?.message?.chat?.id
-        val data = firstUpdate.callbackQuery?.data
-
-        if (textMessage.equals("Hello", true)) {
-            telegramBotService.sendMessage(chatId, "Hello")
+        ?: run {
+            println("Не удалось определить chatId для update: ${firstUpdate.updateId}")
+            continue
         }
+        val data = firstUpdate.callbackQuery?.data
 
         if (textMessage.equals("/start", true)) {
             telegramBotService.sendMenu(chatId)

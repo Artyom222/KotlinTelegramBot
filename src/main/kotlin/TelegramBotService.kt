@@ -40,19 +40,17 @@ data class InlineKeyBoard(
 
 class TelegramBotService(private val botToken: String, private val json: Json) {
 
-    val trainer = LearnWordsTrainer()
     val client = HttpClient.newBuilder().build()
 
     fun getUpdates(updateId: Long): String {
         val urlGetUpdates = "$API_TELEGRAM$botToken/getUpdates?offset=$updateId"
-        val client = HttpClient.newBuilder().build()
         val request = HttpRequest.newBuilder().uri(URI.create(urlGetUpdates)).build()
         val response = client.send(request, HttpResponse.BodyHandlers.ofString())
 
         return response.body()
     }
 
-    fun sendMessage(chatId: Long?, text: String): String {
+    fun sendMessage(chatId: Long, text: String): String {
 
         val urlSendMessage = "$API_TELEGRAM$botToken/sendMessage"
         val requestBody = SendMessageRequest(
@@ -60,7 +58,6 @@ class TelegramBotService(private val botToken: String, private val json: Json) {
             text = text
         )
         val requestBodyString = json.encodeToString(requestBody)
-        val client = HttpClient.newBuilder().build()
         val request = HttpRequest.newBuilder().uri(URI.create(urlSendMessage))
             .header("Content-type", "application/json")
             .POST(HttpRequest.BodyPublishers.ofString(requestBodyString))
@@ -69,7 +66,7 @@ class TelegramBotService(private val botToken: String, private val json: Json) {
         return response.body()
     }
 
-    fun sendQuestion(chatId: Long?, question: Question) {
+    fun sendQuestion(chatId: Long, question: Question) {
         val urlSendMessage = "$API_TELEGRAM$botToken/sendMessage"
         val text = "Выбери правильный перевод слова:\n${question.correctAnswer.original}"
 
@@ -98,7 +95,7 @@ class TelegramBotService(private val botToken: String, private val json: Json) {
         val response = client.send(request, HttpResponse.BodyHandlers.ofString())
     }
 
-    fun sendMenu(chatId: Long?) {
+    fun sendMenu(chatId: Long) {
         val urlSendMessage = "$API_TELEGRAM$botToken/sendMessage"
 
         val requestBody = SendMessageRequest(

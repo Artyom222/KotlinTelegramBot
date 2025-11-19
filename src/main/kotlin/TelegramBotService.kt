@@ -45,9 +45,14 @@ class TelegramBotService(private val botToken: String, private val json: Json) {
     fun getUpdates(updateId: Long): String {
         val urlGetUpdates = "$API_TELEGRAM$botToken/getUpdates?offset=$updateId"
         val request = HttpRequest.newBuilder().uri(URI.create(urlGetUpdates)).build()
-        val response = client.send(request, HttpResponse.BodyHandlers.ofString())
+        return try {
+            val response =client.send(request, HttpResponse.BodyHandlers.ofString())
+            response.body()
+        } catch (e: Exception) {
+            println("Ошибка. ${e.message}")
+            "{\"result\":[]}"
+        }
 
-        return response.body()
     }
 
     fun sendMessage(chatId: Long, text: String): String {
@@ -62,8 +67,13 @@ class TelegramBotService(private val botToken: String, private val json: Json) {
             .header("Content-type", "application/json")
             .POST(HttpRequest.BodyPublishers.ofString(requestBodyString))
             .build()
-        val response = client.send(request, HttpResponse.BodyHandlers.ofString())
-        return response.body()
+        return try {
+            val response =client.send(request, HttpResponse.BodyHandlers.ofString())
+            response.body()
+        } catch (e: Exception) {
+            println("Ошибка. ${e.message}")
+            "{\"result\":[]}"
+        }
     }
 
     fun sendQuestion(chatId: Long, question: Question) {
@@ -92,7 +102,11 @@ class TelegramBotService(private val botToken: String, private val json: Json) {
             .header("Content-type", "application/json")
             .POST(HttpRequest.BodyPublishers.ofString(requestBodyString))
             .build()
-        val response = client.send(request, HttpResponse.BodyHandlers.ofString())
+        val response = try {
+            client.send(request, HttpResponse.BodyHandlers.ofString())
+        } catch (e: Exception) {
+            println("Ошибка. ${e.message}")
+        }
     }
 
     fun sendMenu(chatId: Long) {
@@ -116,10 +130,14 @@ class TelegramBotService(private val botToken: String, private val json: Json) {
             .header("Content-type", "application/json")
             .POST(HttpRequest.BodyPublishers.ofString(requestBodyString))
             .build()
-        val response = client.send(request, HttpResponse.BodyHandlers.ofString())
+        val response = try {
+            client.send(request, HttpResponse.BodyHandlers.ofString())
+        } catch (e: Exception) {
+            println("Ошибка. ${e.message}")
+        }
     }
 
-    fun sendStatistics(chatId: Long?, statistics: String) {
+    fun sendStatistics(chatId: Long, statistics: String) {
         val urlSendMessage = "$API_TELEGRAM$botToken/sendMessage"
 
         val requestBody = SendMessageRequest(
@@ -139,6 +157,10 @@ class TelegramBotService(private val botToken: String, private val json: Json) {
             .header("Content-type", "application/json")
             .POST(HttpRequest.BodyPublishers.ofString(requestBodyString))
             .build()
-        val response = client.send(request, HttpResponse.BodyHandlers.ofString())
+        val response = try {
+            client.send(request, HttpResponse.BodyHandlers.ofString())
+        } catch (e: Exception) {
+            println("Ошибка. ${e.message}")
+        }
     }
 }

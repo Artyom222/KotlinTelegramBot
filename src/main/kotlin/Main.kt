@@ -1,8 +1,5 @@
 package org.example
 
-const val CORRECT_ANSWERS_TO_LEARN = 3
-const val OPTIONS_COUNT = 4
-
 fun Question.questionToString(): String {
     val variants = this.variants.mapIndexed { index, word ->
         "${index + 1} - ${word.translate}"

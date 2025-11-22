@@ -13,6 +13,7 @@ const val BACK_TO_MENU_CLICKED = "back_to_menu_clicked"
 const val STATISTICS_CLICKED = "statistics_clicked"
 const val API_TELEGRAM = "https://api.telegram.org/bot"
 const val CALLBACK_DATA_ANSWER_PREFIX = "answer_"
+const val RESET_CLICKED = "reset_clicked"
 
 @Serializable
 data class SendMessageRequest(
@@ -102,6 +103,12 @@ class TelegramBotService(private val botToken: String, private val json: Json) {
             .header("Content-type", "application/json")
             .POST(HttpRequest.BodyPublishers.ofString(requestBodyString))
             .build()
+        try {
+            client.send(request, HttpResponse.BodyHandlers.ofString())
+        } catch (e: Exception) {
+            println("Ошибка. ${e.message}")
+            "{\"result\":[]}"
+        }
 
     }
 
@@ -116,6 +123,9 @@ class TelegramBotService(private val botToken: String, private val json: Json) {
                     listOf(
                         InlineKeyBoard("Изучить слова", LEARN_WORDS_CLICKED),
                         InlineKeyBoard("Статистика", STATISTICS_CLICKED),
+                    ),
+                    listOf(
+                        InlineKeyBoard("Сбросить прогресс", RESET_CLICKED),
                     )
                 )
             )
@@ -126,6 +136,12 @@ class TelegramBotService(private val botToken: String, private val json: Json) {
             .header("Content-type", "application/json")
             .POST(HttpRequest.BodyPublishers.ofString(requestBodyString))
             .build()
+        try {
+            client.send(request, HttpResponse.BodyHandlers.ofString())
+        } catch (e: Exception) {
+            println("Ошибка. ${e.message}")
+            "{\"result\":[]}"
+        }
     }
 
     fun sendStatistics(chatId: Long, statistics: String) {
@@ -148,6 +164,12 @@ class TelegramBotService(private val botToken: String, private val json: Json) {
             .header("Content-type", "application/json")
             .POST(HttpRequest.BodyPublishers.ofString(requestBodyString))
             .build()
+        try {
+            client.send(request, HttpResponse.BodyHandlers.ofString())
+        } catch (e: Exception) {
+            println("Ошибка. ${e.message}")
+            "{\"result\":[]}"
+        }
 
     }
 }

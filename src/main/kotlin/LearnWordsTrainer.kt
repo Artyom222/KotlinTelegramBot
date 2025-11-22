@@ -1,7 +1,9 @@
 package org.example
 
-
 import java.io.File
+
+const val CORRECT_ANSWERS_TO_LEARN = 3
+const val OPTIONS_COUNT = 4
 
 data class Question(
     val variants: List<Word>,
@@ -20,7 +22,9 @@ data class Word(
     var correctAnswersCount: Int = 0,
 )
 
-class LearnWordsTrainer {
+class LearnWordsTrainer(
+    private val fileName: String = "words.txt",
+) {
 
     var question: Question? = null
     private val dictionary = loadDictionary()
@@ -57,7 +61,7 @@ class LearnWordsTrainer {
             val correctAnswerId = it.variants.indexOf(it.correctAnswer) + 1
             if (correctAnswerId == userAnswerInput) {
                 it.correctAnswer.correctAnswersCount++
-                saveDictionary(dictionary)
+                saveDictionary()
                 true
             } else false
         } ?: false
@@ -65,8 +69,12 @@ class LearnWordsTrainer {
 
     private fun loadDictionary(): List<Word> {
         try {
+            val wordsFile = File(fileName)
+            if (!wordsFile.exists()) {
+                File("words.txt").copyTo(wordsFile)
+            }
             val dictionary = mutableListOf<Word>()
-            val wordsFile = File("words.txt")
+
             wordsFile.readLines()
                 .forEach { line ->
                     val parts = line.split("|")
@@ -81,12 +89,17 @@ class LearnWordsTrainer {
 
     }
 
-    private fun saveDictionary(dictionary: List<Word>) {
-        val wordsFile = File("words.txt")
+    private fun saveDictionary() {
+        val wordsFile = File(fileName)
         val content = dictionary.joinToString("\n") { word ->
             "${word.original}|${word.translate}|${word.correctAnswersCount}"
         }
         wordsFile.writeText(content)
+    }
+
+    fun resetProgress() {
+        dictionary.forEach { it.correctAnswersCount = 0 }
+        saveDictionary()
     }
 
 }

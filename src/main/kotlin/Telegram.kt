@@ -51,7 +51,6 @@ fun main(args: Array<String>) {
     val telegramBotService = TelegramBotService(botToken, json)
     var lastUpdateId = 0L
     val trainers = HashMap<Long, LearnWordsTrainer>()
-    val trainer = LearnWordsTrainer()
 
     while (true) {
         Thread.sleep(2000)
@@ -133,6 +132,6 @@ fun handleUpdate(
 
     if (data == RESET_CLICKED) {
         trainer.resetProgress()
-        telegramBotService.sendMessage(chatId, "Прогрессс сброшен")
+        telegramBotService.sendMessage(chatId, "Прогресс сброшен")
     }
 }
